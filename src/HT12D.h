@@ -5,9 +5,9 @@
 #define ht12e_h
 
 // Error Codes
-#define ERROR_TIMEOUT 0x8000
-#define NOT_CONNECTED 0x4000
-#define NO_DATA 0x2000
+#define HT_ERROR_TIMEOUT 0x1000
+#define HT_NO_DATA 0x2000
+#define HT_NO_SYNC 0x3000
 
 // Address/Data Pins
 #define ADDR_0 0
@@ -27,7 +27,7 @@ class HT12E
 {
 public:
     HT12E(uint8_t pin, uint16_t frequency);
-    uint32_t read(); 
+    uint32_t read();
     int8_t readPin(const uint8_t pin);
 
 private:

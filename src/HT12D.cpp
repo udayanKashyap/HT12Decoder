@@ -4,7 +4,7 @@
 /*
 Constructor
 pin is the data input pin of microcontroller to which encoder is connected
-frequency is the fosc oscilattor frequency of the encoder
+frequency (in hz) is the fosc oscilattor frequency of the encoder
 fosc can be found out from the ht12e datasheet or using oscilloscope
 */
 HT12E::HT12E(uint8_t pin, uint16_t frequency)
@@ -12,7 +12,7 @@ HT12E::HT12E(uint8_t pin, uint16_t frequency)
     inputPin = pin;
     pinMode(inputPin, INPUT);
     data = 0;
-    clockPulse = 10e6/frequency;
+    clockPulse = 1e6/frequency;
 }
 
 /*
@@ -27,13 +27,18 @@ uint16_t HT12E::read()
         while (digitalRead(inputPin) == LOW);
         duration = pulseIn(inputPin, LOW);
 
-        // Serial.print(duration); Serial.print(" ");
+        #ifdef HT12D_DEBUG
+            Serial.print(duration); Serial.print(" ");
+        #endif
         if (duration>( clockLower*36 ) && duration<( clockUpper*36 ))
             break;
     }
 
     if (counter == 13){
-        return ERROR_TIMEOUT;
+        #ifdef HT12D_DEBUG
+            Serial.print(" ERROR Timeout... ")
+        #endif
+        return HT_ERROR_TIMEOUT;
     }
 
     unsigned long start = micros();
@@ -42,7 +47,10 @@ uint16_t HT12E::read()
             break;
         }
         if ((micros() - start) > 10 * clockPulse){
-            return ERROR_TIMEOUT;
+            #ifdef HT12D_DEBUG
+                Serial.print(" ERROR No Sync... ")
+            #endif
+            return HT_NO_SYNC;
         }
     }
 
@@ -56,7 +64,10 @@ uint16_t HT12E::read()
         }
         else{
             data = 0;
-            return NO_DATA;
+            #ifdef HT12D_DEBUG
+                Serial.print(" ERROR No Data... ")
+            #endif
+            return HT_NO_DATA;
         }
     }
     return (data);
@@ -75,7 +86,7 @@ int8_t HT12E::readPin(const uint8_t pin)
         return -1;
     }
     uint16_t bitsReceived = read();
-    if (bitsReceived >= 0x2000)
+    if (bitsReceived > 0x0fff)
     {
         return -2;
     }
@@ -84,7 +95,3 @@ int8_t HT12E::readPin(const uint8_t pin)
     bitsReceived = (bitsReceived & mask) >> (11 - pin);
     return bitsReceived;
 }
-
-#undef ERROR_TIMEOUT
-#undef NOT_CONNECTED
-#undef NO_DATA
