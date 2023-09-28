@@ -27,8 +27,9 @@ class HT12E
 {
 public:
     HT12E(uint8_t pin, uint16_t frequency);
-    uint32_t read();
+    uint16_t read();
     int8_t readPin(const uint8_t pin);
+    bool * readArr();
 
 private:
     uint8_t inputPin;  

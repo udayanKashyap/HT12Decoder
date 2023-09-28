@@ -95,3 +95,19 @@ int8_t HT12E::readPin(const uint8_t pin)
     bitsReceived = (bitsReceived & mask) >> (11 - pin);
     return bitsReceived;
 }
+
+/*
+Returns the data received as an array of bool data type
+Return NULL if read Error occurred
+Otherwise returns pointer to bool array of size=12 elements
+*/
+bool * HT12E::readArr(){
+    uint16_t data = read();
+    if(data>0x0fff)
+        return NULL;
+    bool * dataArr = new bool[12];
+    for(int i=0; i<12; i++){
+        dataArr[i] = (data & (0x0800>>i)) >> (11-i);
+    }
+    return dataArr;
+}
