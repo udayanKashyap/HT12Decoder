@@ -32,7 +32,7 @@ class HT12E
 public:
     HT12E(uint8_t pin, uint16_t frequency);
     HT12E(uint8_t pin);
-    uint16_t read();
+    uint16_t read(uint32_t timeout=HT_TIMEOUT);
     int8_t readPin(const uint8_t pin);
     bool * readArr();
 
@@ -41,7 +41,7 @@ private:
     uint16_t data; // this is data;
     uint16_t clockPulse;
     
-    int32_t detectClock();
+    int32_t detectClock(uint32_t timeout=HT_TIMEOUT);
 };
 
 #endif
