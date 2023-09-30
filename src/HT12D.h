@@ -4,6 +4,10 @@
 #ifndef ht12e_h
 #define ht12e_h
 
+#ifndef HT_TIMEOUT
+    #define HT_TIMEOUT 1000U
+#endif
+
 // Error Codes
 #define HT_ERROR_TIMEOUT 0x1000
 #define HT_NO_DATA 0x2000
@@ -27,6 +31,7 @@ class HT12E
 {
 public:
     HT12E(uint8_t pin, uint16_t frequency);
+    HT12E(uint8_t pin);
     uint16_t read();
     int8_t readPin(const uint8_t pin);
     bool * readArr();
@@ -34,8 +39,9 @@ public:
 private:
     uint8_t inputPin;  
     uint16_t data; // this is data;
-    uint64_t duration; // pulse duration
     uint16_t clockPulse;
+    
+    int32_t detectClock();
 };
 
 #endif
