@@ -5,7 +5,7 @@
 #define ht12e_h
 
 #ifndef HT_TIMEOUT
-    #define HT_TIMEOUT 1000U
+    #define HT_TIMEOUT 1000U //timeout in ms (miliseconds)
 #endif
 
 // Error Codes
@@ -30,11 +30,14 @@
 class HT12E
 {
 public:
-    HT12E(uint8_t pin, uint16_t frequency);
-    HT12E(uint8_t pin);
+    HT12E();
+
     uint16_t read(uint32_t timeout=HT_TIMEOUT);
     int8_t readPin(const uint8_t pin);
     bool * readArr();
+
+    bool begin(uint8_t pin, uint32_t frequency);
+    bool begin(uint8_t pin);
 
 private:
     uint8_t inputPin;  
