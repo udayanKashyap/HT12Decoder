@@ -7,13 +7,7 @@ pin is the data input pin of microcontroller to which encoder is connected
 frequency (in hz) is the fosc oscilattor frequency of the encoder
 fosc can be found out from the ht12e datasheet or using oscilloscope
 */
-HT12E::HT12E(uint8_t pin, uint16_t frequency)
-{
-    inputPin = pin;
-    pinMode(inputPin, INPUT);
-    data = 0;
-    clockPulse = 1e6/frequency;
-}
+HT12E::HT12E(){}
 
 /*
 Returns 16-bit bitstring with first 4 MSB as error codes and rest as data.
@@ -149,9 +143,25 @@ int32_t HT12E::detectClock(uint32_t timeout=HT_TIMEOUT){
 }
 
 /*
-Constructor to use with automatic clock detection and initialization
+Initializes encoder with specified inputPin and frequency
+returns 1 for successfull initialization 
 */
-HT12E::HT12E(uint8_t pin){
+bool HT12E::begin(uint8_t pin, uint32_t frequency){
+    inputPin = pin;
+    pinMode(inputPin, INPUT);
+    data = 0;
+    clockPulse = 1e6/frequency;
+    return 1;
+}
+
+
+/*
+Initializes encoder on specified pin
+Auto-detects operating frequency
+defaults to 3kHz freq if auto-freq fails and returns 0
+returns 1 for successfull determination and initialization
+*/
+bool HT12E::begin(uint8_t pin){
     inputPin = pin;
     pinMode(inputPin, INPUT);
     data = 0;
@@ -173,10 +183,11 @@ HT12E::HT12E(uint8_t pin){
     if(clockTot==0){
         Serial.println("ERROR - CLOCK NOT DETERMINED.\nUSING DEFAULT FREQ OF 3kHz");
         clockPulse = 1e6/3000;
-        return;
+        return 0;
     }
     clockPulse = clockTot/count;
     #ifdef HT12D_DEBUG    
         Serial.print("clock determined = "); Serial.print(clockPulse);
     #endif
+    return 1;
 }
